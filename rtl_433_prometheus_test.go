@@ -62,6 +62,24 @@ func TestParsingToMetrics(t *testing.T) {
 		t.Errorf("unexpected collecting result:\n%s", err)
 	}
 
+	wantTemperatureF := `
+		# HELP rtl_433_temperature_fahrenheit Temperature in Fahrenheit
+		# TYPE rtl_433_temperature_fahrenheit gauge
+		rtl_433_temperature_fahrenheit{channel="",id="238",location="",model="Cotech-367959"} 44.8
+		rtl_433_temperature_fahrenheit{channel="",id="46",location="",model="Acurite-606TX"} 45.14
+ 		rtl_433_temperature_fahrenheit{channel="1",id="77",location="",model="AmbientWeather-TX8300"} 61.7
+		rtl_433_temperature_fahrenheit{channel="1",id="89",location="",model="Solight-TE44"} 43.7
+		rtl_433_temperature_fahrenheit{channel="1",id="94",location="",model="Nexus-TH"} 72.68
+		rtl_433_temperature_fahrenheit{channel="2",id="184",location="",model="Nexus-TH"} 71.06
+		rtl_433_temperature_fahrenheit{channel="2",id="59",location="",model="Ambientweather-F007TH"} 91.7
+		rtl_433_temperature_fahrenheit{channel="3",id="55",location="",model="Ecowitt-WH53"} 64.4
+		rtl_433_temperature_fahrenheit{channel="A",id="7997",location="",model="Acurite-Tower"} 54.68
+	`
+
+	if err := testutil.CollectAndCompare(temperatureF, strings.NewReader(wantTemperatureF), "rtl_433_temperature_fahrenheit"); err != nil {
+		t.Errorf("unexpected collecting result:\n%s", err)
+	}
+
 	wantHumidity := `
 		# HELP rtl_433_humidity Relative Humidity (0-1.0)
 		# TYPE rtl_433_humidity gauge
@@ -106,6 +124,16 @@ func TestParsingToMetrics(t *testing.T) {
 		t.Errorf("unexpected collecting result:\n%s", err)
 	}
 
+	wantWindAvgMPH := `
+		# HELP rtl_433_wind_avg_mph Wind speed average in miles per hour
+		# TYPE rtl_433_wind_avg_mph gauge
+		rtl_433_wind_avg_mph{channel="",id="238",location="",model="Cotech-367959"} 1.118468
+	`
+
+	if err := testutil.CollectAndCompare(wind_avg_mph, strings.NewReader(wantWindAvgMPH), "rtl_433_wind_avg_mph"); err != nil {
+		t.Errorf("unexpected collecting result:\n%s", err)
+	}
+
 	wantWindMaxMS := `
 		# HELP rtl_433_wind_max_m_s Wind speed max in meters per second
 		# TYPE rtl_433_wind_max_m_s gauge
@@ -113,6 +141,16 @@ func TestParsingToMetrics(t *testing.T) {
 	`
 
 	if err := testutil.CollectAndCompare(wind_max_m_s, strings.NewReader(wantWindMaxMS), "rtl_433_wind_max_m_s"); err != nil {
+		t.Errorf("unexpected collecting result:\n%s", err)
+	}
+
+	wantWindMaxMPH := `
+		# HELP rtl_433_wind_max_mph Wind speed max in miles per hour
+		# TYPE rtl_433_wind_max_mph gauge
+		rtl_433_wind_max_mph{channel="",id="238",location="",model="Cotech-367959"} 1.5658552
+	`
+
+	if err := testutil.CollectAndCompare(wind_max_mph, strings.NewReader(wantWindMaxMPH), "rtl_433_wind_max_mph"); err != nil {
 		t.Errorf("unexpected collecting result:\n%s", err)
 	}
 

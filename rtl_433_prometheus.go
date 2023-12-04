@@ -79,6 +79,13 @@ Matchers:
 		},
 		labels,
 	)
+	temperatureF = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "rtl_433_temperature_fahrenheit",
+			Help: "Temperature in Fahrenheit",
+		},
+		labels,
+	)
 	humidity = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "rtl_433_humidity",
@@ -107,10 +114,24 @@ Matchers:
 		},
 		labels,
 	)
+	wind_avg_mph = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "rtl_433_wind_avg_mph",
+			Help: "Wind speed average in miles per hour",
+		},
+		labels,
+	)
 	wind_max_m_s = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "rtl_433_wind_max_m_s",
 			Help: "Wind speed max in meters per second",
+		},
+		labels,
+	)
+	wind_max_mph = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "rtl_433_wind_max_mph",
+			Help: "Wind speed max in miles per hour",
 		},
 		labels,
 	)
@@ -158,8 +179,12 @@ type Message struct {
 	WindDirDeg *float64 `json:"wind_dir_deg"`
 	// Wind average speed in m/s
 	WindAvgMS *float64 `json:"wind_avg_m_s"`
+	// Wind average speed in MPH
+	WindAvgMPH *float64 `json:"wind_avg_mph"`
 	// Wind max speed in m/s
 	WindMaxMS *float64 `json:"wind_max_m_s"`
+	// Wind max speed in MPH
+	WindMaxMPH *float64 `json:"wind_max_mph"`
 	// Humidity (0-100). Nil if not present in initial JSON.
 	Humidity *int32 `json:"humidity"`
 	// Power on channel 0 (Watts)
@@ -238,6 +263,21 @@ func fToC(f float64) float64 {
 	return (f - 32) * 5 / 9
 }
 
+// Celsius to Fahrenheit
+func cToF(c float64) float64 {
+	return (c * 9 / 5) + 32
+}
+
+// Meters/sec to Miles/hour
+func mpsToMph(mps float64) float64 {
+	return mps * 2.236936
+}
+
+// Miles/hour to Meters/sec
+func mphToMps(mph float64) float64 {
+	return mph / 2.236936
+}
+
 func run(r io.Reader) error {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -270,8 +310,10 @@ func run(r io.Reader) error {
 		timestamp.WithLabelValues(labels...).SetToCurrentTime()
 		if t := msg.TemperatureC; t != nil {
 			temperature.WithLabelValues(labels...).Set(*t)
+			temperatureF.WithLabelValues(labels...).Set(cToF(*t))
 		} else if t := msg.TemperatureF; t != nil {
 			temperature.WithLabelValues(labels...).Set(fToC(*t))
+			temperatureF.WithLabelValues(labels...).Set(*t)
 		}
 		if r := msg.RainMM; r != nil {
 			rain_mm.WithLabelValues(labels...).Set(float64(*r))
@@ -281,9 +323,17 @@ func run(r io.Reader) error {
 		}
 		if wa := msg.WindAvgMS; wa != nil {
 			wind_avg_m_s.WithLabelValues(labels...).Set(float64(*wa))
+			wind_avg_mph.WithLabelValues(labels...).Set(mpsToMph(float64(*wa)))
+		} else if wa := msg.WindAvgMPH; wa != nil {
+			wind_avg_m_s.WithLabelValues(labels...).Set(mphToMps(float64(*wa)))
+			wind_avg_mph.WithLabelValues(labels...).Set(float64(*wa))
 		}
 		if wm := msg.WindMaxMS; wm != nil {
 			wind_max_m_s.WithLabelValues(labels...).Set(float64(*wm))
+			wind_max_mph.WithLabelValues(labels...).Set(mpsToMph(float64(*wm)))
+		} else if wm := msg.WindMaxMPH; wm != nil {
+			wind_max_m_s.WithLabelValues(labels...).Set(mphToMps(float64(*wm)))
+			wind_max_mph.WithLabelValues(labels...).Set(float64(*wm))
 		}
 		if h := msg.Humidity; h != nil {
 			humidity.WithLabelValues(labels...).Set(float64(*h) / 100)
