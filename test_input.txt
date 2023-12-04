@@ -7,3 +7,6 @@
 {badjson should be ignored}
 {"time" : "2020-08-28 23:55:58", "model" : "AmbientWeather-TX8300", "id" : 77, "channel" : 1, "battery" : 2, "temperature_C" : 16.500, "humidity" : 66, "mic" : "CHECKSUM"}
 {"time" : "2020-12-12 13:42:24", "model" : "Ambientweather-F007TH", "id" : 59, "channel" : 2, "battery_ok" : 1, "temperature_F" : 91.700, "humidity" : 35, "mic" : "CRC"}
+{"time" : "2023-12-04 09:07:20", "model" : "Cotech-367959", "id" : 238, "battery_ok" : 1, "temperature_F" : 44.800, "humidity" : 90, "rain_mm" : 120.100, "wind_dir_deg" : 155, "wind_avg_m_s" : 0.500, "wind_max_m_s" : 0.700, "light_lux" : 69627, "uv" : 251, "mic" : "CRC"}
+{"time" : "2023-12-04 09:07:48", "model" : "Acurite-606TX", "id" : 46, "battery_ok" : 1, "temperature_C" : 7.300, "mic" : "CHECKSUM"}
+{"time" : "2023-12-04 09:08:20", "model" : "Solight-TE44", "id" : 89, "channel" : 1, "temperature_C" : 6.500, "mic" : "CRC"}
