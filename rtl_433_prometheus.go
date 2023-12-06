@@ -371,7 +371,7 @@ func main() {
 	flag.Parse()
 	log.Print("channelMatchers: " + channelMatchers.String())
 	log.Print("idMatchers: " + idMatchers.String())
-	prometheus.MustRegister(packetsReceived, temperature, rain_mm, wind_dir_deg, wind_avg_m_s, wind_max_m_s, timestamp, battery, watts)
+	prometheus.MustRegister(packetsReceived, temperature, temperatureF, rain_mm, wind_dir_deg, wind_avg_m_s, wind_avg_mph, wind_max_m_s, wind_max_mph, timestamp, battery, watts)
 	// Add Go module build info.
 	prometheus.MustRegister(prometheus.NewBuildInfoCollector())
 
